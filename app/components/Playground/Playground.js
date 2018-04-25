@@ -2,33 +2,45 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { List } from 'immutable';
-import { AppModeChangeAction, CurrentUserChangeAction, RowChangeAction } from '../../actions';
+import { AppModeChangeAction, CorrectKeysAction, CurrentUserChangeAction, GameResetAction, RowChangeAction } from '../../actions';
 import Row from '../Row/Row';
 import constants from '../../constants';
 
 @connect(state => ({
   currentUser: state.currentUser,
   rows: state.rows,
+  correctKeys: state.correctKeys,
+  appState: state.appState,
 }))
 export default class Playground extends React.Component {
   static propTypes = {
     dispatch: PropTypes.func.isRequired,
     currentUser: PropTypes.number.isRequired,
     rows: PropTypes.instanceOf(List).isRequired,
+    correctKeys: PropTypes.array.isRequired,
+    appState: PropTypes.string.isRequired,
   };
 
 
   componentWillReceiveProps(newProps) {
-    const { rows } = newProps;
-    const emptyCount = rows.filter(r => r.user === null).count();
-    if (emptyCount === 0) {
-      this.props.dispatch(new AppModeChangeAction(constants.appModes[2]));
+    const { rows, currentUser, dispatch } = newProps;
+    if (currentUser !== this.props.currentUser) {
+      const selectedRows = rows.filter(r => r.user);
+      const keys = selectedRows.filter(r => r.user !== currentUser).map(r => r.key);
+      const correctKeys = constants.answerOptions.find(o => o.every(key => keys.includes(key)));
+      if (correctKeys) {
+        dispatch(new CorrectKeysAction(correctKeys));
+        dispatch(new AppModeChangeAction(constants.appStates[2]));
+      }
+      if (selectedRows.count() === 9) {
+        dispatch(new AppModeChangeAction(constants.appStates[2]));
+      }
     }
   }
 
   onClick = (row) => {
     const { currentUser, dispatch } = this.props;
-    if (row.user) {
+    if (row.user || this.gameFinished) {
       return;
     }
     const newRow = Object.assign({}, row, { user: currentUser });
@@ -37,11 +49,17 @@ export default class Playground extends React.Component {
   };
 
   get rows() {
-    const { rows } = this.props;
+    const { rows, correctKeys } = this.props;
     return (
       <div>
         {rows.map(row => (
-          <Row onClick={this.onClick} row={row} key={row.key} />
+          <Row
+            highlighted={correctKeys.includes(row.key)}
+            onClick={this.onClick}
+            row={row}
+            key={row.key}
+            disabled={this.gameFinished}
+          />
         ))}
       </div>
     );
@@ -56,11 +74,24 @@ export default class Playground extends React.Component {
     );
   }
 
+  get gameFinished() {
+    return this.props.appState === constants.appStates[2];
+  }
+
+  onRestart = () => {
+    this.props.dispatch(new GameResetAction());
+  };
+
   render() {
     return (
       <div>
         {this.currentUser}
         {this.rows}
+        {this.gameFinished ? (
+          <div>
+            <span onClick={this.onRestart}>Начать заново</span>
+          </div>
+        ) : null}
       </div>
     );
   }

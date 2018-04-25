@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Playground from '../Playground/Playground';
 import constants from '../../constants';
-import { AppModeChangeAction } from '../../actions';
+import { GameResetAction } from '../../actions';
 
 @connect(state => ({
   appState: state.appState,
@@ -15,21 +15,15 @@ export default class App extends React.Component {
   };
 
   onStart = () => {
-    this.props.dispatch(new AppModeChangeAction(constants.appModes[1]));
+    this.props.dispatch(new GameResetAction());
   };
 
   get content() {
     const { appState } = this.props;
-    if (appState === constants.appModes[0]) {
+    if (appState === constants.appStates[0]) {
       return (
         <div onClick={this.onStart}>
           Начать игру
-        </div>
-      );
-    } else if (appState === constants.appModes[2]) {
-      return (
-        <div onClick={this.onStart}>
-          Еще раз
         </div>
       );
     }

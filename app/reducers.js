@@ -18,6 +18,8 @@ function rows(state = constants.initial.rows, action) {
         state.findIndex(r => r.key === action.payload.key),
         () => action.payload,
       );
+    case constants.actions.GAME_RESET:
+      return constants.initial.rows;
     default:
       return state;
   }
@@ -45,9 +47,21 @@ function currentUser(state = 1, action) {
   }
 }
 
+function correctKeys(state = [], action) {
+  switch (action.type) {
+    case constants.actions.CORRECT_KEYS_LOADED:
+      return action.payload;
+    case constants.actions.GAME_RESET:
+      return [];
+    default:
+      return state;
+  }
+}
+
 export default {
   appState,
   winner,
   currentUser,
+  correctKeys,
   rows,
 };
