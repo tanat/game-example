@@ -1,6 +1,6 @@
 import constants from './constants';
 
-function appMode(state = constants.initial.appMode, action) {
+function appState(state = constants.initial.appMode, action) {
   switch (action.type) {
     case constants.actions.APP_MODE_CHANGED:
       return action.payload;
@@ -11,23 +11,13 @@ function appMode(state = constants.initial.appMode, action) {
   }
 }
 
-function playerOneSelectedRows(state = constants.initial.selectedRows, action) {
+function rows(state = constants.initial.rows, action) {
   switch (action.type) {
-    case constants.actions.PLAYER_ONE_SELECTED_ROWS_CHANGED:
-      return action.payload;
-    case constants.actions.GAME_RESET:
-      return constants.initial.selectedRows;
-    default:
-      return state;
-  }
-}
-
-function playerTwoSelectedRows(state = constants.initial.selectedRows, action) {
-  switch (action.type) {
-    case constants.actions.PLAYER_TWO_SELECTED_ROWS_CHANGED:
-      return action.payload;
-    case constants.actions.GAME_RESET:
-      return constants.initial.selectedRows;
+    case constants.actions.ROW_CHANGED:
+      return state.update(
+        state.findIndex(r => r.key === action.payload.key),
+        () => action.payload,
+      );
     default:
       return state;
   }
@@ -44,9 +34,20 @@ function winner(state = null, action) {
   }
 }
 
+function currentUser(state = 1, action) {
+  switch (action.type) {
+    case constants.actions.CURRENT_USER_CHANGED:
+      return action.payload;
+    case constants.actions.GAME_RESET:
+      return 1;
+    default:
+      return state;
+  }
+}
+
 export default {
-  appMode,
-  playerOneSelectedRows,
-  playerTwoSelectedRows,
+  appState,
   winner,
+  currentUser,
+  rows,
 };

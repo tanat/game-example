@@ -28,6 +28,9 @@
     "padded-blocks": "off",
     "no-trailing-spaces": "off",
     "jsx-a11y/anchor-has-content": "off",
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    "jsx-a11y/click-events-have-key-events": "off",
+    "function-paren-newline": "off",
+    "object-curly-newline": "off"
   }
 }
