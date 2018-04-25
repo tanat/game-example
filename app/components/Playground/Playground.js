@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { List } from 'immutable';
-import { AppModeChangeAction, CorrectKeysAction, CurrentUserChangeAction, GameResetAction, RowChangeAction } from '../../actions';
+import { AppStateChangeAction, CorrectKeysAction, CurrentUserChangeAction, GameResetAction, RowChangeAction } from '../../actions';
 import Row from '../Row/Row';
 import constants from '../../constants';
 
@@ -30,10 +30,10 @@ export default class Playground extends React.Component {
       const correctKeys = constants.answerOptions.find(o => o.every(key => keys.includes(key)));
       if (correctKeys) {
         dispatch(new CorrectKeysAction(correctKeys));
-        dispatch(new AppModeChangeAction(constants.appStates[2]));
+        dispatch(new AppStateChangeAction(constants.appStates[2]));
       }
       if (selectedRows.count() === 9) {
-        dispatch(new AppModeChangeAction(constants.appStates[2]));
+        dispatch(new AppStateChangeAction(constants.appStates[2]));
       }
     }
   }
@@ -51,7 +51,7 @@ export default class Playground extends React.Component {
   get rows() {
     const { rows, correctKeys } = this.props;
     return (
-      <div>
+      <div className="r-playground--rows">
         {rows.map(row => (
           <Row
             highlighted={correctKeys.includes(row.key)}
@@ -68,8 +68,8 @@ export default class Playground extends React.Component {
   get currentUser() {
     const { currentUser } = this.props;
     return (
-      <div>
-        {constants.userNames[currentUser - 1]}
+      <div className="r-playground--user">
+        Ходит {constants.userNames[currentUser - 1]}
       </div>
     );
   }
@@ -84,12 +84,12 @@ export default class Playground extends React.Component {
 
   render() {
     return (
-      <div>
+      <div className="r-playground">
         {this.currentUser}
         {this.rows}
         {this.gameFinished ? (
-          <div>
-            <span onClick={this.onRestart}>Начать заново</span>
+          <div className="r-playground--restart">
+            <button className="r-button" onClick={this.onRestart}>Начать заново</button>
           </div>
         ) : null}
       </div>

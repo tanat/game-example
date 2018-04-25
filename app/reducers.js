@@ -2,7 +2,7 @@ import constants from './constants';
 
 function appState(state = constants.initial.appMode, action) {
   switch (action.type) {
-    case constants.actions.APP_MODE_CHANGED:
+    case constants.actions.APP_STATE_CHANGED:
       return action.payload;
     case constants.actions.GAME_RESET:
       return constants.initial.appMode;
